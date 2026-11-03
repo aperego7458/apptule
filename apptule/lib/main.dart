@@ -1,3 +1,4 @@
+import 'package:apptule/config/app_colors.dart';
 import 'package:apptule/splashscreen/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Software Ganadero',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: AppColors.backgColor,
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: AppColors.primaryCream),
+        ),
+        useMaterial3: true,
       ),
       home: const SplashScreen(),
     );

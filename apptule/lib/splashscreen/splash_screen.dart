@@ -1,5 +1,4 @@
-import 'package:apptule/login/login_screem.dart';
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 
 import '../config/app_colors.dart';
 
@@ -44,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Transición a la pantalla de Login
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => LoginScreem()),
+      MaterialPageRoute(builder: (_) => SplashScreen()),
     );
   }
 
@@ -181,6 +180,241 @@ class _SplashScreenState extends State<SplashScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+}*/
+
+import 'package:apptule/config/app_colors.dart';
+import 'package:apptule/splashscreen/SplashCustom.dart';
+import 'package:flutter/material.dart';
+import 'package:apptule/login/login_screem.dart';
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Duración recomendada para UX fluida (2.2 segundos)
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    );
+
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+    );
+
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _navigateToLogin();
+      }
+    });
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _navigateToLogin() {
+    if (!mounted) return;
+
+    // Transición suave hacia el Login
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 600),
+        pageBuilder: (_, animation, __) => const LoginScreem(),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgColor,
+      body: Stack(
+        children: [
+          // 1. Textura de puntos idéntica al Login
+          Positioned.fill(
+            child: CustomPaint(
+              painter: const SplashDotGridPainter(
+                dotColor: Color(0xFF1C2B0E),
+                spacing: 13.0,
+                radius: 1.1,
+              ),
+            ),
+          ),
+
+          // 2. Silueta de paisaje en la base
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 90,
+            child: CustomPaint(
+              painter: const SplashHillsPainter(hillColor: Color(0xFF2C3917)),
+            ),
+          ),
+
+          // 3. Contenido Principal
+          SafeArea(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 36.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(flex: 3),
+
+                      // Isotipo oficial: 3 cabezas doradas
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(3, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5.0,
+                            ),
+                            child: CustomPaint(
+                              size: const Size(22, 22),
+                              painter: const SplashCattleHeadPainter(
+                                color: AppColors.goldenAccent,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Nombre TULE
+                      const Text(
+                        'TULE',
+                        style: TextStyle(
+                          fontFamily: 'serif',
+                          fontSize: 54,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 8.0,
+                          color: AppColors.primaryCream,
+                          height: 1.05,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // 3. Ilustración Central
+                      Container(
+                        width: 180,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.lightGreen,
+                            width: 2,
+                          ),
+                          color: AppColors.creamColor.withValues(alpha: 0.1),
+                        ),
+                        child: const Center(
+                          child: Text('🏞️', style: TextStyle(fontSize: 64)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // Tagline
+                      const Text(
+                        'Gestión Ganadera Inteligente',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'sans-serif',
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.3,
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      const Spacer(flex: 3),
+
+                      // Barra de Carga estilizada
+                      AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, _) {
+                          final percentage = (_animationController.value * 100)
+                              .toInt();
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Iniciando sistema...',
+                                    style: TextStyle(
+                                      fontFamily: 'sans-serif',
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.subtitleColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$percentage%',
+                                    style: const TextStyle(
+                                      fontFamily: 'sans-serif',
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.goldenAccent,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  height: 5,
+                                  color: const Color(0xFF1A280D),
+                                  child: LinearProgressIndicator(
+                                    value: _animationController.value,
+                                    backgroundColor: Colors.transparent,
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          AppColors.primaryCream,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 36),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
